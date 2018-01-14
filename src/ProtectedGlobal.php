@@ -4,32 +4,26 @@ namespace Gt\ProtectedGlobal;
 use ArrayAccess;
 
 class ProtectedGlobal implements ArrayAccess {
-	const ERROR_MESSAGE = "Global variables are disabled - see https://php.gt/globals";
+	const WARNING_MESSAGE = "Global variables are protected - see https://php.gt/globals";
 
-	protected $whiteListedKeyValues = [];
+	public $whiteListData = [];
 
-	public function __construct(array $originalArray = [], array $whiteList = []) {
-		$this->storeWhiteListedValues($originalArray, $whiteList);
+	public function __construct(array $whiteListData = []) {
+		$this->whiteListData = $whiteListData;
 	}
 
 	public function __toString():string {
-		return self::ERROR_MESSAGE;
+		return self::WARNING_MESSAGE;
 	}
 
 	public function __debugInfo():array {
-		return ["ERROR" => (string)$this];
-	}
-
-	public function storeWhiteListedValues(array $array, array $whiteList):void {
-		foreach($array as $key => $value) {
-			if(in_array($key, $whiteList)) {
-				$this->whiteListedKeyValues[$key] = $value;
-			}
-		}
+		return array_merge([
+			"WARNING" => (string)$this,
+		], $this->whiteListData);
 	}
 
 	public function offsetExists($offset):bool {
-		if(isset($this->whiteListedKeyValues[$offset])) {
+		if(array_key_exists($offset, $this->whiteListData)) {
 			return true;
 		}
 
@@ -38,8 +32,8 @@ class ProtectedGlobal implements ArrayAccess {
 	}
 
 	public function offsetGet($offset) {
-		if(isset($this->whiteListedKeyValues[$offset])) {
-			return $this->whiteListedKeyValues[$offset];
+		if(array_key_exists($offset, $this->whiteListData)) {
+			return $this->whiteListData[$offset];
 		}
 
 		$this->throwException();
@@ -47,22 +41,22 @@ class ProtectedGlobal implements ArrayAccess {
 	}
 
 	public function offsetSet($offset, $value):void {
-		if(isset($this->whiteListedKeyValues[$offset])) {
-			$this->whiteListedKeyValues[$offset] = $value;
+		if(array_key_exists($offset, $this->whiteListData)) {
+			$this->whiteListData[$offset] = $value;
 		}
 
 		$this->throwException();
 	}
 
 	public function offsetUnset($offset):void {
-		if(isset($this->whiteListedKeyValues[$offset])) {
-			unset($this->whiteListedKeyValues);
+		if(array_key_exists($offset, $this->whiteListData)) {
+			unset($this->whiteListData);
 		}
 
 		$this->throwException();
 	}
 
 	protected function throwException():void {
-		throw new ProtectedGlobalException(self::ERROR_MESSAGE);
+		throw new ProtectedGlobalException(self::WARNING_MESSAGE);
 	}
 }

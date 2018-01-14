@@ -1,96 +1,79 @@
 <?php
 namespace Gt\ProtectedGlobal\Test;
 
+use Gt\ProtectedGlobal\ProtectedGlobal;
 use Gt\ProtectedGlobal\Protection;
 use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
 class GlobalOverrideTest extends TestCase {
-	public function testDeregister() {
+	public function testRemoveGlobals() {
 		$testGlobals = [
 			"_ENV" => [
 				"somekey" => "somevalue",
 			]
 		];
 		self::assertArrayHasKey("somekey", $testGlobals["_ENV"]);
-		Protection::deregister($testGlobals);
+		Protection::removeGlobals($testGlobals);
 		self::assertArrayNotHasKey("somekey", $testGlobals["_ENV"]);
 		self::assertNotNull($testGlobals);
 	}
 
 	public function testOverride() {
+		$env = ["somekey" => "somevalue"];
+		$server = [];
+		$get = [];
+		$post = [];
+		$files = [];
+		$cookie = [];
+		$session = [];
 		$testGlobals = [
-			"_ENV" => [
-				"somekey" => "somevalue",
-			]
+			"_ENV" => $env,
 		];
 		self::assertEquals("somevalue", $testGlobals["_ENV"]["somekey"]);
-		Protection::override($testGlobals);
-		self::expectException(ProtectedGlobalException::class);
-		echo $testGlobals["_ENV"]["somekey"];
+		self::assertEquals("somevalue", $env["somekey"]);
+		Protection::overrideInternals(
+			$testGlobals,
+			$env,
+			$server,
+			$get,
+			$post,
+			$files,
+			$cookie,
+			$session
+		);
+
+		self::assertInstanceOf(ProtectedGlobal::class, $env);
+		self::assertEquals("somevalue", $env["somekey"]);
 	}
 
-	public function testDeregisterWithWhiteList() {
-		$time = time();
+	public function testDeregisterOverride() {
+		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
+		$server = [];
+		$get = [];
+		$post = [];
+		$files = [];
+		$cookie = [];
+		$session = [];
 		$testGlobals = [
-			"_ENV" => [
-				"time" => $time,
-				"version" => PHP_VERSION,
-			],
-			"_SERVER" => [
-				"directory_separator" => DIRECTORY_SEPARATOR,
-				"test_dir" => __DIR__,
-			]
+			"_ENV" => $env,
 		];
-
-		self::assertEquals($time, $testGlobals["_ENV"]["time"]);
-
-		Protection::deregister($testGlobals, [
-			"_ENV" => ["version"],
-			"_SERVER" => ["directory_separator"],
+		Protection::removeGlobals($env, [
+			"env" => "anotherkey",
 		]);
-
-		self::assertEquals(
-			PHP_VERSION,
-			$testGlobals["_ENV"]["version"]
-		);
-		self::assertEquals(
-			DIRECTORY_SEPARATOR,
-			$testGlobals["_SERVER"]["directory_separator"]
-		);
-
-		self::assertArrayNotHasKey("time", $testGlobals["_ENV"]);
-		self::assertArrayNotHasKey("test_dir", $testGlobals["_SERVER"]);
-	}
-
-	public function testOverrideWithWhiteList() {
-		$time = time();
-		$testGlobals = [
-			"_ENV" => [
-				"time" => $time,
-				"version" => PHP_VERSION,
-			],
-			"_SERVER" => [
-				"directory_separator" => DIRECTORY_SEPARATOR,
-				"test_dir" => __DIR__,
-			]
-		];
-
-		Protection::override($testGlobals, [
-			"_ENV" => ["version"],
-			"_SERVER" => ["directory_separator"],
-		]);
-
-		self::assertEquals(
-			PHP_VERSION,
-			$testGlobals["_ENV"]["version"]
-		);
-		self::assertEquals(
-			DIRECTORY_SEPARATOR,
-			$testGlobals["_SERVER"]["directory_separator"]
+		Protection::overrideInternals(
+			$testGlobals,
+			$env,
+			$server,
+			$get,
+			$post,
+			$files,
+			$cookie,
+			$session
 		);
 
+		self::assertEquals("anothervalue", $env["anotherkey"]);
 		self::expectException(ProtectedGlobalException::class);
-		echo $testGlobals["_SERVER"]["test_dir"];
+		echo $env["somevalue"];
 	}
 }

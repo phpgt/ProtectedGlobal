@@ -6,64 +6,48 @@ class Protection {
 	 * Pass in an optional whitelist to allow the specified globals to remain set. This is
 	 * useful for tools like XDebug which require access to the $_COOKIE superglobal.
 	 */
-	public static function deregister(array &$globalsToDeregister, array $whiteList = []):void {
-		foreach($globalsToDeregister as $globalKey => $globalValue) {
-			if(is_array($globalValue)) {
-				foreach($globalValue as $key => $value) {
-					if(!self::isKeyOnWhitelist(
-						$whiteList,
-						$globalKey,
-						$key
-					)) {
-						unset($globalsToDeregister[$globalKey][$key]);
-					}
-				}
+	public static function removeGlobals(array &$globalsToDeregister, array $whiteList = []):array {
+		$keep = [];
+
+		foreach(array_keys($globalsToDeregister) as $key) {
+			$keep[$key] = [];
+		}
+
+		foreach($whiteList as $whiteListKey => $whiteListElements) {
+			if(!isset($globalsToDeregister[$whiteListKey])) {
+				continue;
 			}
-			else {
-				if(!self::isKeyOnWhitelist(
-					$whiteList,
-					$globalKey
-				)) {
-					unset($globalsToDeregister[$globalKey]);
+
+			foreach($whiteListElements as $key) {
+				if(isset($globalsToDeregister[$whiteListKey][$key])) {
+					$keep[$whiteListKey][$key] = $globalsToDeregister[$whiteListKey][$key];
+				}
+				else {
+					$keep[$whiteListKey][$key] = null;
 				}
 			}
 		}
+
+		$globalsToDeregister = $keep;
+		return $keep;
 	}
 
-	public static function override(array &$globalsToOverride, array $whiteList = []):void {
-		foreach($globalsToOverride as $globalKey => $globalValue) {
-			if(is_array($globalValue)) {
-				$globalsToOverride[$globalKey] = new ProtectedGlobal(
-					$globalValue,
-					$whiteList[$globalKey] ?? []
-				);
-			}
-			else {
-// Sometimes there are stray variables on the $GLOBALS superglobal. These are not arrays themselves,
-// but it's safe to treat them in the same way.
-				$globalsToOverride[$globalKey] = new ProtectedGlobal();
-			}
-		}
-	}
-
-	public static function isKeyOnWhitelist(
-		array $whiteList,
-		string $outerKey,
-		string $innerKey = null
-	):bool {
-		$whiteListed = false;
-
-		if(array_key_exists($outerKey, $whiteList)) {
-			if(is_null($innerKey)) {
-				$whiteListed = true;
-			}
-			else {
-				if(in_array($innerKey, $whiteList[$outerKey])) {
-					$whiteListed = true;
-				}
-			}
-		}
-
-		return $whiteListed;
+	public static function overrideInternals(
+		array $globals,
+		array &$env,
+		array &$server,
+		array &$get,
+		array &$post,
+		array &$files,
+		array &$cookie,
+		array &$session
+	):void {
+		$env = new ProtectedGlobal($globals["_ENV"] ?? []);
+		$server = new ProtectedGlobal($globals["_SERVER"] ?? []);
+		$get = new ProtectedGlobal($globals["_GET"] ?? []);
+		$post = new ProtectedGlobal($globals["_POST"] ?? []);
+		$files = new ProtectedGlobal($globals["_FILES"] ?? []);
+		$cookie = new ProtectedGlobal($globals["_COOKIE"] ?? []);
+		$session = new ProtectedGlobal($globals["_SESSION"] ?? []);
 	}
 }
