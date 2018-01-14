@@ -28,7 +28,6 @@ class GlobalOverride {
 				}
 			}
 		}
-		unset($globalsToDeregister);
 	}
 
 	public static function override(array &$globalsToOverride, array $whiteList = []):void {
