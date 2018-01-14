@@ -1,7 +1,7 @@
 <?php
 namespace Gt\ProtectedGlobal;
 
-class GlobalOverride {
+class Protection {
 	/**
 	 * Pass in an optional whitelist to allow the specified globals to remain set. This is
 	 * useful for tools like XDebug which require access to the $_COOKIE superglobal.
@@ -31,13 +31,22 @@ class GlobalOverride {
 	}
 
 	public static function override(array &$globalsToOverride, array $whiteList = []):void {
-		$globalsToOverride = new GlobalStub();
 		foreach($globalsToOverride as $globalKey => $globalValue) {
-			$globalsToOverride[$globalKey] = new GlobalStub();
+			if(is_array($globalValue)) {
+				$globalsToOverride[$globalKey] = new ProtectedGlobal(
+					$globalValue,
+					$whiteList[$globalKey] ?? []
+				);
+			}
+			else {
+// Sometimes there are stray variables on the $GLOBALS superglobal. These are not arrays themselves,
+// but it's safe to treat them in the same way.
+				$globalsToOverride[$globalKey] = new ProtectedGlobal();
+			}
 		}
 	}
 
-	protected static function isKeyOnWhitelist(
+	public static function isKeyOnWhitelist(
 		array $whiteList,
 		string $outerKey,
 		string $innerKey = null
