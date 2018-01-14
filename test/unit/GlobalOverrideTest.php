@@ -62,4 +62,35 @@ class GlobalOverrideTest extends TestCase {
 		self::assertArrayNotHasKey("time", $testGlobals["global1"]);
 		self::assertArrayNotHasKey("test_dir", $testGlobals["global2"]);
 	}
+
+	public function testOverrideWithWhiteList() {
+		$time = time();
+		$testGlobals = [
+			"global1" => [
+				"time" => $time,
+				"version" => PHP_VERSION,
+			],
+			"global2" => [
+				"directory_separator" => DIRECTORY_SEPARATOR,
+				"test_dir" => __DIR__,
+			]
+		];
+
+		GlobalOverride::override($testGlobals, [
+			"global1" => ["version"],
+			"global2" => ["directory_separator"],
+		]);
+
+		self::assertEquals(
+			PHP_VERSION,
+			$testGlobals["global1"]["version"]
+		);
+		self::assertEquals(
+			DIRECTORY_SEPARATOR,
+			$testGlobals["global2"]["directory_separator"]
+		);
+
+		self::expectException(ProtectedGlobalException::class);
+		echo $testGlobals["global2"]["test_dir"];
+	}
 }

@@ -10,22 +10,22 @@ class GlobalOverride {
 		foreach($globalsToDeregister as $globalKey => $globalValue) {
 			if(is_array($globalValue)) {
 				foreach($globalValue as $key => $value) {
-					self::unsetGlobalIfNotWhitelisted(
-						$globalsToDeregister,
+					if(!self::isKeyOnWhitelist(
 						$whiteList,
 						$globalKey,
 						$key
-					);
-//					unset($GLOBALS[$globalKey][$key]);
+					)) {
+						unset($globalsToDeregister[$globalKey][$key]);
+					}
 				}
 			}
 			else {
-				self::unsetGlobalIfNotWhitelisted(
-					$globalsToDeregister,
+				if(!self::isKeyOnWhitelist(
 					$whiteList,
 					$globalKey
-				);
-//				unset($globalsToDeregister[$globalKey]);
+				)) {
+					unset($globalsToDeregister[$globalKey]);
+				}
 			}
 		}
 		unset($globalsToDeregister);
@@ -38,32 +38,24 @@ class GlobalOverride {
 		}
 	}
 
-	protected static function unsetGlobalIfNotWhitelisted(
-		array &$globalsToUnset,
+	protected static function isKeyOnWhitelist(
 		array $whiteList,
-		string $globalKey,
-		string $key = null
-	):void {
+		string $outerKey,
+		string $innerKey = null
+	):bool {
 		$whiteListed = false;
 
-		if(array_key_exists($globalKey, $whiteList)) {
-			if(is_null($key)) {
+		if(array_key_exists($outerKey, $whiteList)) {
+			if(is_null($innerKey)) {
 				$whiteListed = true;
 			}
 			else {
-				if(in_array($key, $whiteList[$globalKey])) {
+				if(in_array($innerKey, $whiteList[$outerKey])) {
 					$whiteListed = true;
 				}
 			}
 		}
 
-		if(!$whiteListed) {
-			if(is_null($key)) {
-				unset($globalsToUnset[$globalKey]);
-			}
-			else {
-				unset($globalsToUnset[$globalKey][$key]);
-			}
-		}
+		return $whiteListed;
 	}
 }
