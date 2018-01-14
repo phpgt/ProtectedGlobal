@@ -1,0 +1,25 @@
+{
+	"name": "phpgt/protectedglobal",
+	"description": "Protect against accidental use of superglobals.",
+	"license": [
+		"MIT"
+	],
+
+	"require": {
+
+	},
+	"require-dev": {
+		"phpunit/phpunit": "6.4.*"
+	},
+
+	"autoload": {
+		"psr-4": {
+			"Gt\\ProtectedGlobal\\": "./src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Gt\\ProtectedGlobal\\Test\\": "./test/unit"
+		}
+	}
+}
