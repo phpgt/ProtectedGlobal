@@ -15,18 +15,22 @@ class GlobalStub implements ArrayAccess {
 	}
 
 	public function offsetExists($offset):bool {
-		// TODO: Implement offsetExists() method.
+		$this->throwException();
 	}
 
 	public function offsetGet($offset) {
-		// TODO: Implement offsetGet() method.
+		$this->throwException();
 	}
 
 	public function offsetSet($offset, $value):void {
-		// TODO: Implement offsetSet() method.
+		$this->throwException();
 	}
 
 	public function offsetUnset($offset):void {
-		// TODO: Implement offsetUnset() method.
+		$this->throwException();
+	}
+
+	protected function throwException():void {
+		throw new ProtectedGlobalException(self::ERROR_MESSAGE);
 	}
 }
