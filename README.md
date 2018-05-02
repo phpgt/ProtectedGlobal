@@ -22,6 +22,21 @@ Assuming there are object oriented abstractions to the superglobals set up, this
 	<img src="https://img.shields.io/badge/docs-www.php.gt/protectedglobal-26a5e3.svg?style=flat-square" alt="PHP.Gt/ProtectedGlobal documentation" />
 </a>
 
-## Example usage: xyz
+There are two functions on the static `Protection` class:
 
-// TODO.
+1. `removeGlobals` - pass in an array containing the global arrays you wish to empty. Take an optional whitelist of keys to keep.
+2. `overrideInternals` - pass in all superglobal arrays to override with the `ProtectedGlobal` class.
+
+## Example usage:
+
+```php
+// Before protecting, abstract the globals using an OOP mechanism of choice.
+$input = new Input($_GET, $_POST, $_FILES);
+// etc...
+
+removeGlobals([$_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION], ["get" => ["xdebug"]]);
+overrideInternals($_GLOBALS, $_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION);
+
+// Now an exception will be thrown when trying to access a global variable:
+$_SESSION["god-object"] = "Value I want to pass around globally";
+```
