@@ -34,8 +34,8 @@ There are two functions on the static `Protection` class:
 $input = new Input($_GET, $_POST, $_FILES);
 // etc...
 
-removeGlobals([$_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION], ["get" => ["xdebug"]]);
-overrideInternals($_GLOBALS, $_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION);
+Protection::removeGlobals([$_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION], ["get" => ["xdebug"]]);
+Protection::overrideInternals($_GLOBALS, $_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION);
 
 // Now an exception will be thrown when trying to access a global variable:
 $_SESSION["god-object"] = "Value I want to pass around globally";
