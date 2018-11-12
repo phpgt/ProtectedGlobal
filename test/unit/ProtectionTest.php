@@ -6,7 +6,7 @@ use Gt\ProtectedGlobal\Protection;
 use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
-class GlobalOverrideTest extends TestCase {
+class ProtectionTest extends TestCase {
 	public function testRemoveGlobals() {
 		$testGlobals = [
 			"_ENV" => [
@@ -47,7 +47,7 @@ class GlobalOverrideTest extends TestCase {
 		self::assertEquals("somevalue", $env["somekey"]);
 	}
 
-	public function testDeregisterOverride() {
+	public function testWhitelist() {
 		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
 		$server = [];
 		$get = [];
@@ -74,6 +74,38 @@ class GlobalOverrideTest extends TestCase {
 
 		self::assertEquals("anothervalue", $env["anotherkey"]);
 		self::expectException(ProtectedGlobalException::class);
-		echo $env["somevalue"];
+		$variable = $env["somevalue"];
+	}
+
+	public function testWhitelistMany() {
+		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
+		$server = ["serverkey1" => "servervalue1"];
+		$get = [];
+		$post = ["postkey1" => "postvalue1", "postkey2" => "postvalue2"];
+		$files = [];
+		$cookie = [];
+		$session = [];
+		$testGlobals = [
+			"_ENV" => $env,
+		];
+		Protection::removeGlobals($env);
+		Protection::removeGlobals($post, [
+			"env" => [],
+			"post" => "postkey2",
+		]);
+		Protection::overrideInternals(
+			$testGlobals,
+			$env,
+			$server,
+			$get,
+			$post,
+			$files,
+			$cookie,
+			$session
+		);
+
+		self::assertEquals("postvalue2", $env["postkey1"]);
+		self::expectException(ProtectedGlobalException::class);
+		$variable = $post["postkey1"];
 	}
 }
