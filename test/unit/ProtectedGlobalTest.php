@@ -2,6 +2,7 @@
 namespace Gt\ProtectedGlobal\Test;
 
 use Gt\ProtectedGlobal\ProtectedGlobal;
+use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
 class ProtectedGlobalTest extends TestCase {
@@ -14,18 +15,26 @@ class ProtectedGlobalTest extends TestCase {
 	}
 
 	public function testDebugInfo() {
-		$globals = [
-			"_GET" => [
-				"name" => "test"
-			]
+		$whiteList = [
+			"name" => "test",
 		];
-		$sut = new ProtectedGlobal($globals);
+		$sut = new ProtectedGlobal($whiteList);
 		$expectedWarning = array_merge([
 			"WARNING" => (string)$sut,
-		], $globals);
+		], $whiteList);
 		self::assertEquals(
 			$expectedWarning,
 			$sut->__debugInfo()
 		);
+	}
+
+	public function testOffsetExistsThrowsException() {
+		$whiteList = [
+			"name" => "test",
+		];
+		$sut = new ProtectedGlobal($whiteList);
+		self::expectException(ProtectedGlobalException::class);
+
+		$exists = isset($sut["not-exists"]);
 	}
 }

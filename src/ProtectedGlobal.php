@@ -28,7 +28,6 @@ class ProtectedGlobal implements ArrayAccess {
 		}
 
 		$this->throwException();
-		return false;
 	}
 
 	public function offsetGet($offset) {
@@ -37,7 +36,6 @@ class ProtectedGlobal implements ArrayAccess {
 		}
 
 		$this->throwException();
-		return null;
 	}
 
 	public function offsetSet($offset, $value):void {
