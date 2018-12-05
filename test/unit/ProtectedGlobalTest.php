@@ -37,4 +37,13 @@ class ProtectedGlobalTest extends TestCase {
 
 		$exists = isset($sut["not-exists"]);
 	}
+
+	public function testOffsetExists() {
+		$whiteList = [
+			"name" => "test",
+		];
+		$sut = new ProtectedGlobal($whiteList);
+		$exists = isset($sut["name"]);
+		self::assertTrue($exists);
+	}
 }
