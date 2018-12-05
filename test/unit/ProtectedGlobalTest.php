@@ -12,4 +12,20 @@ class ProtectedGlobalTest extends TestCase {
 			$sut
 		);
 	}
+
+	public function testDebugInfo() {
+		$globals = [
+			"_GET" => [
+				"name" => "test"
+			]
+		];
+		$sut = new ProtectedGlobal($globals);
+		$expectedWarning = array_merge([
+			"WARNING" => (string)$sut,
+		], $globals);
+		self::assertEquals(
+			$expectedWarning,
+			$sut->__debugInfo()
+		);
+	}
 }
