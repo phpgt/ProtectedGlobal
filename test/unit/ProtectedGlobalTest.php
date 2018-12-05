@@ -73,4 +73,21 @@ class ProtectedGlobalTest extends TestCase {
 		self::expectException(ProtectedGlobalException::class);
 		unset($sut["something"]);
 	}
+
+	public function testOffsetUnset() {
+		$whiteList = [
+			"name" => "test",
+			"country" => "United Kingdom",
+		];
+		$sut = new ProtectedGlobal($whiteList);
+
+		$exception = null;
+
+		try {
+			unset($sut["name"]);
+		}
+		catch(\Exception $exception) {}
+
+		self::assertNull($exception);
+	}
 }
