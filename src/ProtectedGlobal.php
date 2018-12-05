@@ -6,7 +6,7 @@ use ArrayAccess;
 class ProtectedGlobal implements ArrayAccess {
 	const WARNING_MESSAGE = "Global variables are protected - see https://php.gt/globals";
 
-	public $whiteListData = [];
+	protected $whiteListData;
 
 	public function __construct(array $whiteListData = []) {
 		$this->whiteListData = $whiteListData;
@@ -19,7 +19,7 @@ class ProtectedGlobal implements ArrayAccess {
 	public function __debugInfo():array {
 		return array_merge([
 			"WARNING" => (string)$this,
-		], $this->whiteListData);
+		], $this->whiteListData ?? []);
 	}
 
 	public function offsetExists($offset):bool {
@@ -41,6 +41,7 @@ class ProtectedGlobal implements ArrayAccess {
 	public function offsetSet($offset, $value):void {
 		if(array_key_exists($offset, $this->whiteListData)) {
 			$this->whiteListData[$offset] = $value;
+			return;
 		}
 
 		$this->throwException();
@@ -49,6 +50,7 @@ class ProtectedGlobal implements ArrayAccess {
 	public function offsetUnset($offset):void {
 		if(array_key_exists($offset, $this->whiteListData)) {
 			unset($this->whiteListData);
+			return;
 		}
 
 		$this->throwException();
