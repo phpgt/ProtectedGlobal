@@ -34,7 +34,6 @@ class ProtectedGlobalTest extends TestCase {
 		];
 		$sut = new ProtectedGlobal($whiteList);
 		self::expectException(ProtectedGlobalException::class);
-
 		$exists = isset($sut["not-exists"]);
 	}
 
@@ -45,5 +44,14 @@ class ProtectedGlobalTest extends TestCase {
 		$sut = new ProtectedGlobal($whiteList);
 		$exists = isset($sut["name"]);
 		self::assertTrue($exists);
+	}
+
+	public function testOffsetSetThrowsException() {
+		$whiteList = [
+			"name" => "test",
+		];
+		$sut = new ProtectedGlobal($whiteList);
+		self::expectException(ProtectedGlobalException::class);
+		$sut["something"] = "broken";
 	}
 }
