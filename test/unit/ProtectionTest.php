@@ -15,7 +15,7 @@ class ProtectionTest extends TestCase {
 		];
 		self::assertArrayHasKey("somekey", $testGlobals["_ENV"]);
 		Protection::removeGlobals($testGlobals);
-		self::assertArrayNotHasKey("somekey", $testGlobals["_ENV"]);
+		self::assertArrayNotHasKey("_ENV", $testGlobals);
 		self::assertNotNull($testGlobals);
 	}
 
@@ -58,9 +58,10 @@ class ProtectionTest extends TestCase {
 		$testGlobals = [
 			"_ENV" => $env,
 		];
-		Protection::removeGlobals($env, [
-			"env" => "anotherkey",
-		]);
+		Protection::removeGlobals(
+			$env,
+			"anotherkey"
+		);
 		Protection::overrideInternals(
 			$testGlobals,
 			$env,
@@ -80,21 +81,36 @@ class ProtectionTest extends TestCase {
 	public function testWhitelistMany() {
 		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
 		$server = ["serverkey1" => "servervalue1"];
-		$get = [];
+		$get = ["date" => "1999-12-31", "bug" => "millennium", "name" => "Y2K"];
 		$post = ["postkey1" => "postvalue1", "postkey2" => "postvalue2"];
 		$files = [];
 		$cookie = [];
 		$session = [];
 		$testGlobals = [
 			"_ENV" => $env,
+			"_SERVER" => $server,
+			"_GET" => $get,
+			"_POST" => $post,
 		];
+
 		Protection::removeGlobals($env);
-		Protection::removeGlobals($post, [
-			"env" => [],
-			"post" => "postkey2",
-		]);
+		Protection::removeGlobals($server);
+		$getToKeep = Protection::removeGlobals(
+			$get,
+			"date",
+			"name"
+		);
+		$postToKeep = Protection::removeGlobals(
+			$post,
+			"postkey2",
+			"this-does-not-exist"
+		);
+
 		Protection::overrideInternals(
-			$testGlobals,
+			[
+				"_GET" => $getToKeep,
+				"_POST" => $postToKeep,
+			],
 			$env,
 			$server,
 			$get,
@@ -104,7 +120,8 @@ class ProtectionTest extends TestCase {
 			$session
 		);
 
-		self::assertEquals("postvalue2", $env["postkey1"]);
+		self::assertEquals("Y2K", $get["name"]);
+		self::assertEquals("postvalue2", $post["postkey2"]);
 		self::expectException(ProtectedGlobalException::class);
 		$variable = $post["postkey1"];
 	}
