@@ -8,15 +8,16 @@ use PHPUnit\Framework\TestCase;
 
 class ProtectionTest extends TestCase {
 	public function testRemoveGlobals() {
-		$testGlobals = [
+		$globals = [
 			"_ENV" => [
 				"somekey" => "somevalue",
 			]
 		];
-		self::assertArrayHasKey("somekey", $testGlobals["_ENV"]);
-		Protection::removeGlobals($testGlobals);
-		self::assertArrayNotHasKey("_ENV", $testGlobals);
-		self::assertNotNull($testGlobals);
+
+		self::assertArrayHasKey("somekey", $globals["_ENV"]);
+		Protection::removeGlobals($globals);
+		self::assertArrayNotHasKey("_ENV", $globals);
+		self::assertNotNull($globals);
 	}
 
 	public function testOverride() {
@@ -27,13 +28,19 @@ class ProtectionTest extends TestCase {
 		$files = [];
 		$cookie = [];
 		$session = [];
-		$testGlobals = [
+		$globals = [
 			"_ENV" => $env,
 		];
-		self::assertEquals("somevalue", $testGlobals["_ENV"]["somekey"]);
+
+		self::assertEquals(
+			"somevalue",
+			$globals["_ENV"]["somekey"]
+		);
+
 		self::assertEquals("somevalue", $env["somekey"]);
+
 		Protection::overrideInternals(
-			$testGlobals,
+			$globals,
 			$env,
 			$server,
 			$get,
@@ -55,15 +62,19 @@ class ProtectionTest extends TestCase {
 		$files = [];
 		$cookie = [];
 		$session = [];
-		$testGlobals = [
+		$globals = [
 			"_ENV" => $env,
 		];
 		Protection::removeGlobals(
-			$env,
-			"anotherkey"
+			$globals,
+			[
+				"_ENV" => [
+					"anotherkey",
+				],
+			]
 		);
 		Protection::overrideInternals(
-			$testGlobals,
+			$globals,
 			$env,
 			$server,
 			$get,
@@ -86,7 +97,7 @@ class ProtectionTest extends TestCase {
 		$files = [];
 		$cookie = [];
 		$session = [];
-		$testGlobals = [
+		$globals = [
 			"_ENV" => $env,
 			"_SERVER" => $server,
 			"_GET" => $get,
@@ -95,22 +106,23 @@ class ProtectionTest extends TestCase {
 
 		Protection::removeGlobals($env);
 		Protection::removeGlobals($server);
-		$getToKeep = Protection::removeGlobals(
-			$get,
-			"date",
-			"name"
-		);
-		$postToKeep = Protection::removeGlobals(
-			$post,
-			"postkey2",
-			"this-does-not-exist"
+		$fixedGlobals = Protection::removeGlobals(
+			$globals,
+			[
+				"_GET" => [
+					"date",
+					"name"
+				],
+				"_POST" => [
+					"postkey2",
+					"this-does-not-exist"
+				],
+			]
+
 		);
 
 		Protection::overrideInternals(
-			[
-				"_GET" => $getToKeep,
-				"_POST" => $postToKeep,
-			],
+			$fixedGlobals,
 			$env,
 			$server,
 			$get,
