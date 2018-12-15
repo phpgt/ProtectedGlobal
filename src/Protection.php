@@ -6,26 +6,18 @@ class Protection {
 	 * Pass in an optional whitelist to allow the specified globals to remain set. This is
 	 * useful for tools like XDebug which require access to the $_COOKIE superglobal.
 	 */
-	public static function removeGlobals(array &$globalsToDeregister, array $whiteList = []):array {
+	public static function removeGlobals(
+		array &$globalsToDeregister,
+		string...$whiteList
+	):array {
 		$keep = [];
 
-		foreach(array_keys($globalsToDeregister) as $key) {
-			$keep[$key] = [];
-		}
-
-		foreach($whiteList as $whiteListKey => $whiteListElements) {
+		foreach($whiteList as $whiteListKey) {
 			if(!isset($globalsToDeregister[$whiteListKey])) {
 				continue;
 			}
 
-			foreach($whiteListElements as $key) {
-				if(isset($globalsToDeregister[$whiteListKey][$key])) {
-					$keep[$whiteListKey][$key] = $globalsToDeregister[$whiteListKey][$key];
-				}
-				else {
-					$keep[$whiteListKey][$key] = null;
-				}
-			}
+			$keep[$whiteListKey] = $globalsToDeregister[$whiteListKey];
 		}
 
 		$globalsToDeregister = $keep;

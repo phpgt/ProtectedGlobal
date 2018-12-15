@@ -6,7 +6,7 @@ use Gt\ProtectedGlobal\Protection;
 use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
-class GlobalOverrideTest extends TestCase {
+class ProtectionTest extends TestCase {
 	public function testRemoveGlobals() {
 		$testGlobals = [
 			"_ENV" => [
@@ -15,7 +15,7 @@ class GlobalOverrideTest extends TestCase {
 		];
 		self::assertArrayHasKey("somekey", $testGlobals["_ENV"]);
 		Protection::removeGlobals($testGlobals);
-		self::assertArrayNotHasKey("somekey", $testGlobals["_ENV"]);
+		self::assertArrayNotHasKey("_ENV", $testGlobals);
 		self::assertNotNull($testGlobals);
 	}
 
@@ -47,7 +47,7 @@ class GlobalOverrideTest extends TestCase {
 		self::assertEquals("somevalue", $env["somekey"]);
 	}
 
-	public function testDeregisterOverride() {
+	public function testWhitelist() {
 		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
 		$server = [];
 		$get = [];
@@ -58,9 +58,10 @@ class GlobalOverrideTest extends TestCase {
 		$testGlobals = [
 			"_ENV" => $env,
 		];
-		Protection::removeGlobals($env, [
-			"env" => "anotherkey",
-		]);
+		Protection::removeGlobals(
+			$env,
+			"anotherkey"
+		);
 		Protection::overrideInternals(
 			$testGlobals,
 			$env,
@@ -74,6 +75,54 @@ class GlobalOverrideTest extends TestCase {
 
 		self::assertEquals("anothervalue", $env["anotherkey"]);
 		self::expectException(ProtectedGlobalException::class);
-		echo $env["somevalue"];
+		$variable = $env["somevalue"];
+	}
+
+	public function testWhitelistMany() {
+		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
+		$server = ["serverkey1" => "servervalue1"];
+		$get = ["date" => "1999-12-31", "bug" => "millennium", "name" => "Y2K"];
+		$post = ["postkey1" => "postvalue1", "postkey2" => "postvalue2"];
+		$files = [];
+		$cookie = [];
+		$session = [];
+		$testGlobals = [
+			"_ENV" => $env,
+			"_SERVER" => $server,
+			"_GET" => $get,
+			"_POST" => $post,
+		];
+
+		Protection::removeGlobals($env);
+		Protection::removeGlobals($server);
+		$getToKeep = Protection::removeGlobals(
+			$get,
+			"date",
+			"name"
+		);
+		$postToKeep = Protection::removeGlobals(
+			$post,
+			"postkey2",
+			"this-does-not-exist"
+		);
+
+		Protection::overrideInternals(
+			[
+				"_GET" => $getToKeep,
+				"_POST" => $postToKeep,
+			],
+			$env,
+			$server,
+			$get,
+			$post,
+			$files,
+			$cookie,
+			$session
+		);
+
+		self::assertEquals("Y2K", $get["name"]);
+		self::assertEquals("postvalue2", $post["postkey2"]);
+		self::expectException(ProtectedGlobalException::class);
+		$variable = $post["postkey1"];
 	}
 }
