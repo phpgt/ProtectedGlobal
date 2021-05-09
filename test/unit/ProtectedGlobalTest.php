@@ -8,9 +8,9 @@ use PHPUnit\Framework\TestCase;
 class ProtectedGlobalTest extends TestCase {
 	public function testToString() {
 		$sut = new ProtectedGlobal();
-		self::assertEquals(
+		self::assertSame(
 			ProtectedGlobal::WARNING_MESSAGE,
-			$sut
+			(string)$sut
 		);
 	}
 
