@@ -28,6 +28,7 @@ class ProtectedGlobal implements ArrayAccess {
 		}
 
 		$this->throwException();
+		return false;
 	}
 
 	public function offsetGet($offset) {
