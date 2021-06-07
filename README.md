@@ -6,20 +6,20 @@ Assuming there are object oriented abstractions to the superglobals set up, this
 
 ***
 
-<a href="https://circleci.com/gh/PhpGt/ProtectedGlobal" target="_blank">
-	<img src="https://img.shields.io/circleci/project/PhpGt/ProtectedGlobal/master.svg?style=flat-square" alt="Build status" />
+<a href="https://github.com/PhpGt/ProtectedGlobal/actions" target="_blank">
+	<img src="https://badge.status.php.gt/protectedglobal-build.svg" alt="Build status" />
 </a>
 <a href="https://scrutinizer-ci.com/g/PhpGt/ProtectedGlobal" target="_blank">
-	<img src="https://img.shields.io/scrutinizer/g/PhpGt/ProtectedGlobal/master.svg?style=flat-square" alt="Code quality" />
+	<img src="https://badge.status.php.gt/protectedglobal-quality.svg" alt="Code quality" />
 </a>
 <a href="https://scrutinizer-ci.com/g/PhpGt/ProtectedGlobal" target="_blank">
-	<img src="https://img.shields.io/scrutinizer/coverage/g/PhpGt/ProtectedGlobal/master.svg?style=flat-square" alt="Code coverage" />
+	<img src="https://badge.status.php.gt/protectedglobal-coverage.svg" alt="Code coverage" />
 </a>
 <a href="https://packagist.org/packages/PhpGt/ProtectedGlobal" target="_blank">
-	<img src="https://img.shields.io/packagist/v/PhpGt/ProtectedGlobal.svg?style=flat-square" alt="Current version" />
+	<img src="https://badge.status.php.gt/protectedglobal-version.svg" alt="Current version" />
 </a>
-<a href="http://www.php.gt/dom" target="_blank">
-	<img src="https://img.shields.io/badge/docs-www.php.gt/protectedglobal-26a5e3.svg?style=flat-square" alt="PHP.Gt/ProtectedGlobal documentation" />
+<a href="http://www.php.gt/protectedglobal" target="_blank">
+	<img src="https://badge.status.php.gt/protectedglobal-docs.svg" alt="PHP.Gt/ProtectedGlobal documentation" />
 </a>
 
 There are two functions on the static `Protection` class:
