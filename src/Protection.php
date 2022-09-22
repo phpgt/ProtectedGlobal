@@ -12,7 +12,7 @@ class Protection {
 	 * within each GLOBAL. For example: ["_ENV" => ["keepThis", "andKeepThis"]]
 	 */
 	public static function removeGlobals(
-		array &$globalsToDeregister,
+		array $globalsToDeregister,
 		array $whiteList = []
 	):array {
 		$keep = [];
@@ -27,14 +27,20 @@ class Protection {
 
 			foreach($keysToKeep as $key) {
 				if(!isset($thisGlobal[$key])) {
-					continue;
+					$thisGlobal[$key] = null;
 				}
 
 				$keep[$globalName][$key] = $thisGlobal[$key];
 			}
 		}
 
-		$globalsToDeregister = $keep;
+// This is necessary after PHP 8.1, as it's impossible to pass $GLOBALS by
+// reference, and copies of the $GLOBALS array cannot modify the original.
+		foreach($keep as $key => $kvp) {
+			foreach($kvp as $k => $value) {
+				$GLOBALS[$key][$k] = $value;
+			}
+		}
 		return $keep;
 	}
 

@@ -7,19 +7,6 @@ use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
 class ProtectionTest extends TestCase {
-	public function testRemoveGlobals() {
-		$globals = [
-			"_ENV" => [
-				"somekey" => "somevalue",
-			]
-		];
-
-		self::assertArrayHasKey("somekey", $globals["_ENV"]);
-		Protection::removeGlobals($globals);
-		self::assertArrayNotHasKey("_ENV", $globals);
-		self::assertNotNull($globals);
-	}
-
 	public function testOverride() {
 		$env = ["somekey" => "somevalue"];
 		$server = [];
@@ -136,5 +123,40 @@ class ProtectionTest extends TestCase {
 		self::assertEquals("postvalue2", $post["postkey2"]);
 		self::expectException(ProtectedGlobalException::class);
 		$variable = $post["postkey1"];
+	}
+
+	public function testWhitelistNotExists() {
+		$env = [];
+		$server = [];
+		$get = ["name" => "Cody", "species" => "Feline"];
+		$post = [];
+		$files = [];
+		$cookie = [];
+		$session = [];
+		$globals = [
+			"_GET" => $get,
+		];
+		$globals = Protection::removeGlobals(
+			$globals,
+			[
+				"_GET" => [
+					"name",
+					"age",
+				],
+			]
+		);
+		Protection::overrideInternals(
+			$globals,
+			$env,
+			$server,
+			$get,
+			$post,
+			$files,
+			$cookie,
+			$session
+		);
+
+		self::assertEquals("Cody", $get["name"]);
+		self::assertNull($get["age"]);
 	}
 }
