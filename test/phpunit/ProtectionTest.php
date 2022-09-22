@@ -124,4 +124,39 @@ class ProtectionTest extends TestCase {
 		self::expectException(ProtectedGlobalException::class);
 		$variable = $post["postkey1"];
 	}
+
+	public function testWhitelistNotExists() {
+		$env = [];
+		$server = [];
+		$get = ["name" => "Cody", "species" => "Feline"];
+		$post = [];
+		$files = [];
+		$cookie = [];
+		$session = [];
+		$globals = [
+			"_GET" => $get,
+		];
+		$globals = Protection::removeGlobals(
+			$globals,
+			[
+				"_GET" => [
+					"name",
+					"age",
+				],
+			]
+		);
+		Protection::overrideInternals(
+			$globals,
+			$env,
+			$server,
+			$get,
+			$post,
+			$files,
+			$cookie,
+			$session
+		);
+
+		self::assertEquals("Cody", $get["name"]);
+		self::assertNull($get["age"]);
+	}
 }
