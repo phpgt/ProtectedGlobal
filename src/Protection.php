@@ -12,7 +12,7 @@ class Protection {
 	 * within each GLOBAL. For example: ["_ENV" => ["keepThis", "andKeepThis"]]
 	 */
 	public static function removeGlobals(
-		array &$globalsToDeregister,
+		array $globalsToDeregister,
 		array $whiteList = []
 	):array {
 		$keep = [];

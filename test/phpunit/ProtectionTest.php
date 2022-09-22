@@ -7,19 +7,6 @@ use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
 class ProtectionTest extends TestCase {
-	public function testRemoveGlobals() {
-		$globals = [
-			"_ENV" => [
-				"somekey" => "somevalue",
-			]
-		];
-
-		self::assertArrayHasKey("somekey", $globals["_ENV"]);
-		Protection::removeGlobals($globals);
-		self::assertArrayNotHasKey("_ENV", $globals);
-		self::assertNotNull($globals);
-	}
-
 	public function testOverride() {
 		$env = ["somekey" => "somevalue"];
 		$server = [];
