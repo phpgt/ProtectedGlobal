@@ -28,10 +28,9 @@ class ProtectedGlobal implements ArrayAccess {
 		}
 
 		$this->throwException();
-		return false;
 	}
 
-	public function offsetGet($offset) {
+	public function offsetGet($offset):mixed {
 		if(array_key_exists($offset, $this->whiteListData)) {
 			return $this->whiteListData[$offset];
 		}
