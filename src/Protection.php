@@ -19,6 +19,10 @@ class Protection {
 	 *
 	 * The second parameter is a 2D array describing which keys to whitelist
 	 * within each GLOBAL. For example: ["_ENV" => ["keepThis", "andKeepThis"]]
+	 *
+	 * @param array<string, mixed> $globalsToDeregister
+	 * @param array<string, mixed> $whiteList
+	 * @return array<string, mixed>
 	 */
 	public static function removeGlobals(
 		array $globalsToDeregister,
@@ -53,6 +57,7 @@ class Protection {
 		return $keep;
 	}
 
+	/** @param array<string, mixed> $whitelistedGlobals */
 	public static function overrideInternals(array $whitelistedGlobals):void {
 		foreach(self::GLOBAL_KEYS as $key) {
 			$GLOBALS[$key] = new ProtectedGlobal($whitelistedGlobals[$key] ?? []);
