@@ -2,6 +2,15 @@
 namespace Gt\ProtectedGlobal;
 
 class Protection {
+	const GLOBAL_KEYS = [
+		"_ENV",
+		"_SERVER",
+		"_GET",
+		"_POST",
+		"_FILES",
+		"_COOKIE",
+		"_SESSION",
+	];
 	/**
 	 * Pass in an optional whitelist to allow the specified globals to remain set. This is
 	 * useful for tools like XDebug which require access to the $_COOKIE superglobal.
@@ -10,6 +19,10 @@ class Protection {
 	 *
 	 * The second parameter is a 2D array describing which keys to whitelist
 	 * within each GLOBAL. For example: ["_ENV" => ["keepThis", "andKeepThis"]]
+	 *
+	 * @param array<string, mixed> $globalsToDeregister
+	 * @param array<string, mixed> $whiteList
+	 * @return array<string, mixed>
 	 */
 	public static function removeGlobals(
 		array $globalsToDeregister,
@@ -44,22 +57,10 @@ class Protection {
 		return $keep;
 	}
 
-	public static function overrideInternals(
-		array $globals,
-		array &$env,
-		array &$server,
-		array &$get,
-		array &$post,
-		array &$files,
-		array &$cookie,
-		array &$session
-	):void {
-		$env = new ProtectedGlobal($globals["_ENV"] ?? []);
-		$server = new ProtectedGlobal($globals["_SERVER"] ?? []);
-		$get = new ProtectedGlobal($globals["_GET"] ?? []);
-		$post = new ProtectedGlobal($globals["_POST"] ?? []);
-		$files = new ProtectedGlobal($globals["_FILES"] ?? []);
-		$cookie = new ProtectedGlobal($globals["_COOKIE"] ?? []);
-		$session = new ProtectedGlobal($globals["_SESSION"] ?? []);
+	/** @param array<string, mixed> $whitelistedGlobals */
+	public static function overrideInternals(array $whitelistedGlobals):void {
+		foreach(self::GLOBAL_KEYS as $key) {
+			$GLOBALS[$key] = new ProtectedGlobal($whitelistedGlobals[$key] ?? []);
+		}
 	}
 }
