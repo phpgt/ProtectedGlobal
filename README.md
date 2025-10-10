@@ -40,3 +40,9 @@ Protection::overrideInternals($_GLOBALS, $_ENV, $_SERVER, $_GET, $_POST, $_FILES
 // Now an exception will be thrown when trying to access a global variable:
 $_SESSION["god-object"] = "Value I want to pass around globally";
 ```
+
+# Proudly sponsored by
+
+[JetBrains Open Source sponsorship program](https://www.jetbrains.com/community/opensource/)
+
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://www.jetbrains.com/community/opensource/)
