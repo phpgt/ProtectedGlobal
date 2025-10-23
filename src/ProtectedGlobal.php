@@ -23,7 +23,7 @@ class ProtectedGlobal implements ArrayAccess {
 	public function __debugInfo():array {
 		return array_merge([
 			"WARNING" => (string)$this,
-		], $this->whiteListData ?? []);
+		], $this->whiteListData);
 	}
 
 	public function offsetExists($offset):bool {
@@ -57,7 +57,7 @@ class ProtectedGlobal implements ArrayAccess {
 
 	public function offsetUnset($offset):void {
 		if(array_key_exists($offset, $this->whiteListData)) {
-			unset($this->whiteListData);
+			unset($this->whiteListData[$offset]);
 			return;
 		}
 
