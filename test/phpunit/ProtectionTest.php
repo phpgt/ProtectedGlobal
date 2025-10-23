@@ -6,6 +6,7 @@ use Gt\ProtectedGlobal\Protection;
 use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
+/** @runTestsInSeparateProcesses  */
 class ProtectionTest extends TestCase {
 	public function testRemoveGlobals() {
 		$globals = [
