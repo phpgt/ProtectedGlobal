@@ -23,7 +23,7 @@ class ProtectedGlobal implements ArrayAccess {
 	public function __debugInfo():array {
 		return array_merge([
 			"WARNING" => (string)$this,
-		], $this->whiteListData ?? []);
+		], $this->whiteListData);
 	}
 
 	public function offsetExists($offset):bool {
@@ -31,7 +31,7 @@ class ProtectedGlobal implements ArrayAccess {
 			return true;
 		}
 
-		$this->throwException();
+		$this->throwException($offset);
 		/** @noinspection PhpUnreachableStatementInspection */
 		return false;
 	}
@@ -41,7 +41,7 @@ class ProtectedGlobal implements ArrayAccess {
 			return $this->whiteListData[$offset];
 		}
 
-		$this->throwException();
+		$this->throwException($offset);
 		/** @noinspection PhpUnreachableStatementInspection */
 		return null;
 	}
@@ -52,19 +52,25 @@ class ProtectedGlobal implements ArrayAccess {
 			return;
 		}
 
-		$this->throwException();
+		$this->throwException($offset);
 	}
 
 	public function offsetUnset($offset):void {
 		if(array_key_exists($offset, $this->whiteListData)) {
-			unset($this->whiteListData);
+			unset($this->whiteListData[$offset]);
 			return;
 		}
 
 		$this->throwException();
 	}
 
-	protected function throwException():void {
-		throw new ProtectedGlobalException(self::WARNING_MESSAGE);
+	protected function throwException(string $offset = ""):void {
+		$message = "";
+		if($offset) {
+			$message .= "Attempt to read offset '$offset' - ";
+		}
+
+		$message .= self::WARNING_MESSAGE;
+		throw new ProtectedGlobalException($message);
 	}
 }

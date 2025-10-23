@@ -6,6 +6,7 @@ use Gt\ProtectedGlobal\Protection;
 use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
+/** @runTestsInSeparateProcesses  */
 class ProtectionTest extends TestCase {
 	public function testRemoveGlobals() {
 		$globals = [
@@ -15,7 +16,9 @@ class ProtectionTest extends TestCase {
 		];
 
 		self::assertArrayHasKey("somekey", $globals["_ENV"]);
-		$updated = Protection::removeGlobals($globals);
+
+		$sut = new Protection();
+		$updated = $sut->removeGlobals($globals);
 		self::assertArrayNotHasKey("_ENV", $updated);
 		self::assertNotNull($globals);
 	}
@@ -33,18 +36,21 @@ class ProtectionTest extends TestCase {
 
 		self::assertEquals("somevalue", $env["somekey"]);
 
-		Protection::overrideInternals($globals);
+		$sut = new Protection();
+		$sut->overrideInternals($globals);
 
 		self::assertInstanceOf(ProtectedGlobal::class, $_ENV);
 		self::assertEquals("somevalue", $env["somekey"]);
 	}
 
+	/** @runInSeparateProcess  */
 	public function testWhitelist() {
 		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
 		$globals = [
 			"_ENV" => $env,
 		];
-		$whitelist = Protection::removeGlobals(
+		$sut = new Protection();
+		$whitelist = $sut->removeGlobals(
 			$globals,
 			[
 				"_ENV" => [
@@ -52,13 +58,15 @@ class ProtectionTest extends TestCase {
 				],
 			]
 		);
-		Protection::overrideInternals($whitelist);
+
+		$sut->overrideInternals($whitelist);
 
 		self::assertEquals("anothervalue", $_ENV["anotherkey"]);
 		self::expectException(ProtectedGlobalException::class);
 		$value = $_ENV["somevalue"];
 	}
 
+	/** @runInSeparateProcess  */
 	public function testWhitelistMany() {
 		$env = ["somekey" => "somevalue", "anotherkey" => "anothervalue"];
 		$server = ["serverkey1" => "servervalue1"];
@@ -74,9 +82,10 @@ class ProtectionTest extends TestCase {
 			"_POST" => $post,
 		];
 
-		Protection::removeGlobals($env);
-		Protection::removeGlobals($server);
-		$whitelisted = Protection::removeGlobals(
+		$sut = new Protection();
+		$sut->removeGlobals($env);
+		$sut->removeGlobals($server);
+		$whitelisted = $sut->removeGlobals(
 			$globals,
 			[
 				"_GET" => [
@@ -91,7 +100,7 @@ class ProtectionTest extends TestCase {
 
 		);
 
-		Protection::overrideInternals($whitelisted);
+		$sut->overrideInternals($whitelisted);
 
 		self::assertEquals("Y2K", $_GET["name"]);
 		self::assertEquals("postvalue2", $_POST["postkey2"]);

@@ -9,10 +9,10 @@ Assuming there are object oriented abstractions to the superglobals set up, this
 <a href="https://github.com/PhpGt/ProtectedGlobal/actions" target="_blank">
 	<img src="https://badge.status.php.gt/protectedglobal-build.svg" alt="Build status" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/ProtectedGlobal" target="_blank">
+<a href="https://app.codacy.com/gh/PhpGt/ProtectedGlobal" target="_blank">
 	<img src="https://badge.status.php.gt/protectedglobal-quality.svg" alt="Code quality" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/ProtectedGlobal" target="_blank">
+<a href="https://app.codecov.io/gh/PhpGt/ProtectedGlobal" target="_blank">
 	<img src="https://badge.status.php.gt/protectedglobal-coverage.svg" alt="Code coverage" />
 </a>
 <a href="https://packagist.org/packages/PhpGt/ProtectedGlobal" target="_blank">

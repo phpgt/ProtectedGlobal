@@ -5,6 +5,7 @@ use Gt\ProtectedGlobal\ProtectedGlobal;
 use Gt\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
+/** @runTestsInSeparateProcesses  */
 class ProtectedGlobalTest extends TestCase {
 	public function testToString() {
 		$sut = new ProtectedGlobal();

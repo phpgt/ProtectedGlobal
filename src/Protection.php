@@ -24,7 +24,7 @@ class Protection {
 	 * @param array<string, mixed> $whiteList
 	 * @return array<string, mixed>
 	 */
-	public static function removeGlobals(
+	public function removeGlobals(
 		array $globalsToDeregister,
 		array $whiteList = []
 	):array {
@@ -58,7 +58,7 @@ class Protection {
 	}
 
 	/** @param array<string, mixed> $whitelistedGlobals */
-	public static function overrideInternals(array $whitelistedGlobals):void {
+	public function overrideInternals(array $whitelistedGlobals):void {
 		foreach(self::GLOBAL_KEYS as $key) {
 			$GLOBALS[$key] = new ProtectedGlobal($whitelistedGlobals[$key] ?? []);
 		}
