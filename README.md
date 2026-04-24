@@ -22,20 +22,38 @@ Assuming there are object oriented abstractions to the superglobals set up, this
 	<img src="https://badge.status.php.gt/protectedglobal-docs.svg" alt="PHP.Gt/ProtectedGlobal documentation" />
 </a>
 
-There are two functions on the static `Protection` class:
+There are two main methods on the `Protection` class:
 
-1. `removeGlobals` - pass in an array containing the global arrays you wish to empty. Take an optional whitelist of keys to keep.
-2. `overrideInternals` - pass in all superglobal arrays to override with the `ProtectedGlobal` class.
+1. `removeGlobals` - pass in an array of superglobal data, along with an optional whitelist of offsets to preserve.
+2. `overrideInternals` - replace the internal superglobals with `ProtectedGlobal` wrappers containing the whitelisted data.
 
 ## Example usage:
 
 ```php
+use GT\ProtectedGlobal\Protection;
+
+$protection = new Protection();
+
 // Before protecting, abstract the globals using an OOP mechanism of choice.
 $input = new Input($_GET, $_POST, $_FILES);
 // etc...
 
-Protection::removeGlobals([$_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION], ["get" => ["xdebug"]]);
-Protection::overrideInternals($_GLOBALS, $_ENV, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION);
+$whitelist = $protection->removeGlobals(
+	[
+		"_ENV" => $_ENV,
+		"_SERVER" => $_SERVER,
+		"_GET" => $_GET,
+		"_POST" => $_POST,
+		"_FILES" => $_FILES,
+		"_COOKIE" => $_COOKIE,
+		"_SESSION" => $_SESSION ?? [],
+	],
+	[
+		"_COOKIE" => ["XDEBUG_SESSION"],
+	]
+);
+
+$protection->overrideInternals($whitelist);
 
 // Now an exception will be thrown when trying to access a global variable:
 $_SESSION["god-object"] = "Value I want to pass around globally";

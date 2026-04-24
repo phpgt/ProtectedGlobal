@@ -1,9 +1,9 @@
 <?php
-namespace Gt\ProtectedGlobal\Test;
+namespace GT\ProtectedGlobal\Test;
 
-use Gt\ProtectedGlobal\ProtectedGlobal;
-use Gt\ProtectedGlobal\Protection;
-use Gt\ProtectedGlobal\ProtectedGlobalException;
+use GT\ProtectedGlobal\ProtectedGlobal;
+use GT\ProtectedGlobal\Protection;
+use GT\ProtectedGlobal\ProtectedGlobalException;
 use PHPUnit\Framework\TestCase;
 
 /** @runTestsInSeparateProcesses  */

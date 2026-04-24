@@ -1,5 +1,5 @@
 <?php
-namespace Gt\ProtectedGlobal;
+namespace GT\ProtectedGlobal;
 
 class Protection {
 	const GLOBAL_KEYS = [

@@ -17,12 +17,13 @@
 
 	"autoload": {
 		"psr-4": {
+			"GT\\ProtectedGlobal\\": "./src/",
 			"Gt\\ProtectedGlobal\\": "./src/"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Gt\\ProtectedGlobal\\Test\\": "./test/phpunit"
+			"GT\\ProtectedGlobal\\Test\\": "./test/phpunit"
 		}
 	},
 
