@@ -1,6 +1,6 @@
 <?php
 
-namespace Gt\ProtectedGlobal;
+namespace GT\ProtectedGlobal;
 
 use Exception;
 
